@@ -46,6 +46,8 @@ def run_input(action, newdevice, test):
                 newdevice.press(action['keys'][i]['key'], MonkeyDevice.UP)
     else:
         action_complete = False
+    if 'sleep' in action:
+        MonkeyRunner.sleep(int(action['sleep']))
     return action_complete
 
 
