@@ -260,6 +260,64 @@ The replay file is executed if the replay file name is contained within the app 
 To allow using the same replay file for the same app with different treatments, a partial match is performed instead of a full match.
 For example, for the apps wih package `my.app1.treatement1` and `my.app1.treatmenet2` or `treatement1.my.app1` and `treatmenet2.my.app1`, name the replay file `my.app1` and it will be played for both treatments, but not for the app with package `my.app2.treatement1`.
 
+### Monkey Recorder
+
+First of all, be aware that the recorder is old and not 100% reliable.
+To use the Monkey Recorder to obtain interactions with an app, first, connect the mobile device where the experiment will run and execute the command:
+
+```bash
+monkeyrunner MonkeyPlayer/monkey_recorder.py
+```
+
+This will open a window with a mirror from the connected device, as illustrated in the figure below.
+
+<p align="center">
+	<img src="docs/img/MonkeyRecorder.png" alt="Monkey Recorded app" width="75%"/>
+</p>
+
+You might have the error
+```bash
+Exception in thread "main" java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper
+```
+
+You can resolve it by editing the file `/etc/java-8-openjdk/accessibility.properties` and commeting the line
+
+```
+assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+```
+
+
+
+This window will register your interactions in the right panel, which can be exported to a file by clicking at `Export Actions`.
+Important aspects:
+
+* It will only register the interactions made within this window. It does not capture the interactions made directly in the device.
+* The mirror window is slow, really slow, so perform only one action at a time.
+* The exported actions must be translated to a format recognized by AR:
+
+```text
+# Exported format
+TOUCH|{'x':279,'y':1045,'type':'downAndUp',}
+TOUCH|{'x':747,'y':1008,'type':'downAndUp',}
+TOUCH|{'x':94,'y':176,'type':'downAndUp',}
+
+# Read format
+{"type": "touch", "y": 1045, "down": 0, "up": 1, "x": 279 }
+{"type": "touch", "y": 1008, "down": 2, "up": 3, "x": 747 }
+{"type": "touch", "y": 176, "down": 3, "up": 4, "x": 94 }
+```
+
+Be sure to have only one interaction per line and don't break interactions in multiple lines.
+If your interaction needs to wait for resources to load (e.g., requesting an HTTP request, navigating to an activity, etc.), a wait statement must be added after the interaction. 
+You can do this by adding a `sleep` property in the interaction with the time in seconds to wait.
+
+```
+{"type": "touch", "y": 1045, "down": 0, "up": 1, "x": 279, "sleep": 4 }
+```
+
+To verify the possible interactions check this [example file](examples/native/Scripts/monkey.txt) and the [Replay](MonkeyPlayer/replayLogic.py) script that parse and run the replay file
+
+
 ## Plugin profilers
 It is possible to write your own profiler and use this with Android runner. To do so write your profiler in such a way
 that it uses [this profiler.py class](AndroidRunner/Plugins/Profiler.py) as parent class. The device object that is mentioned within the profiler.py class is based on the device.py of this repo. To see what can be done with this object, see the source code [here](AndroidRunner/Device.py).
