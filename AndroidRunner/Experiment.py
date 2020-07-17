@@ -202,12 +202,6 @@ class Experiment(object):
 
     def interaction(self, device, path, run, *args, **kwargs):
         """Interactions on the device to be profiled"""
-        print("mystart")
-        print("device", device)
-        print("device.current_activity()", device.current_activity())
-        print("args", args)
-        print("kwargs", kwargs)
-        print("myend")
         self.scripts.run('interaction', device, *args, **kwargs)
 
     def stop_profiling(self, device, path, run, *args, **kwargs):
