@@ -37,12 +37,9 @@ class Scripts(object):
     def run(self, name, device, *args, **kwargs):
         self.logger.debug('Running hook {} on device {}\nargs: {}\nkwargs: {}'.format(name, device, args, kwargs))
         for script in self.scripts.get(name, []):
-            if script.__class__.__name__ == 'MonkeyReplay' and script.filename.find(device.current_activity()) == -1:
-                print("Running monkeyreplay file, but the file name and current app did not matched")
-                print("script.__class__.__name__", script.__class__.__name__)
-                print("device.current_activity()", device.current_activity())
-                print("script.path", script.path)
-                print("script.filename", script.filename)
-                print("script.filename.find(device.current_activity())", script.filename.find(device.current_activity()))
+            if script.__class__.__name__ == 'MonkeyReplay' and \
+                    script.filename != 'monkey_replay_all' and \
+                    device.current_activity().find(script.filename) == -1:
+                print("Skip MonkeyReplay. File", script.filename, "is not a match to app", device.current_activity())
                 continue
             script.run(device, *args, **kwargs)
