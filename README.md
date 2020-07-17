@@ -253,6 +253,13 @@ Instead of a path to string it is also possible to provide a JSON object in the 
 ```
 Within the JSON object you can use "type" to "python2", "monkeyrunner" or, "monkeyreplay" depending on the type of script. "python2" can be used for a standard python script,  "monkeyreplay" for running a Monkeyrunner script with the use of the Monkeyrunner framework and "monkeyrunner" can be used to run a Monkeyrunner directly without the entire Monkeyrunner framework. The "timeout" option is to set a maximum run time in miliseconds for the specified script. The optional option "logcat_regex" filters the logcat messages such that it only keeps lines where the log message matches "\<expr\>" where "\<expr\>" is a regular expression.
 
+For the option `monkeyreplay`, the name of the file is used to differentiate the replays executed for specific apps and replays to be executed for all apps. 
+To specify a replay file for all runs, name the replay file `monkey_replay_all`.
+To specify a replay file for a specific app, name the replay file using the app package. 
+The replay file is executed if the replay file name is contained within the app package. 
+To allow using the same replay file for the same app with different treatments, a partial match is performed instead of a full match.
+For example, for the apps wih package `my.app1.treatement1` and `my.app1.treatmenet2` or `treatement1.my.app1` and `treatmenet2.my.app1`, name the replay file `my.app1` and it will be played for both treatments, but not for the app with package `my.app2.treatement1`.
+
 ## Plugin profilers
 It is possible to write your own profiler and use this with Android runner. To do so write your profiler in such a way
 that it uses [this profiler.py class](AndroidRunner/Plugins/Profiler.py) as parent class. The device object that is mentioned within the profiler.py class is based on the device.py of this repo. To see what can be done with this object, see the source code [here](AndroidRunner/Device.py).
