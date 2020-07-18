@@ -24,7 +24,7 @@ class Monsoon(Profiler):
 
     def start_profiling(self, device, **kwargs):
         """Start the profiling process"""
-        device.shell("input keyevent KEYCODE_WAKEUP")
+        # device.shell("input keyevent KEYCODE_WAKEUP")
         time.sleep(5)
         self.profile = True
         power_meter.start()
@@ -32,7 +32,7 @@ class Monsoon(Profiler):
     def stop_profiling(self, device, **kwargs):
         """Stop the profiling process"""
         self.results = power_meter.stop()
-        device.shell("input keyevent KEYCODE_SLEEP")
+        # device.shell("input keyevent KEYCODE_SLEEP")
         self.profile = False
 
     def collect_results(self, device):
