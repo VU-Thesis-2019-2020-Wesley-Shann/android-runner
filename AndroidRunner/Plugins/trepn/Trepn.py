@@ -37,10 +37,14 @@ class Trepn(Profiler):
         util.makedirs(self.pref_dir)
 
         preferences_file = et.parse(op.join(current_dir, 'preferences.xml'))
-        if 'sample_interval' in params:
-            for i in preferences_file.getroot().iter('int'):
-                if i.get('name') == 'com.quicinc.preferences.general.profiling_interval':
-                    i.set('value', str(params['sample_interval']))
+        if 'preferences' in params:
+            for i in preferences_file.getroot().iter():
+                if 'sample_interval' in params['preferences'] and \
+                        i.get('name') == 'com.quicinc.preferences.general.profiling_interval':
+                    i.set('value', str(params['preferences']['sample_interval']))
+                if 'battery_power_source_selection' in params['preferences'] and \
+                        i.get('name') == 'com.quicinc.preferences.battery_power_source_selection':
+                    i.text = params['preferences']['battery_power_source_selection']
         preferences_file.write(op.join(self.pref_dir, 'com.quicinc.trepn_preferences.xml'), encoding='utf-8',
                                xml_declaration=True, standalone=True)
         datapoints_file = et.parse(op.join(current_dir, 'data_points.xml'))
@@ -166,7 +170,8 @@ class Trepn(Profiler):
 
     def aggregate_trepn_subject(self, logs_dir):
         def add_row(accum, new):
-            row = {key: value + float(new[key]) for key, value in list(accum.items()) if key not in ['Component', 'count']}
+            row = {key: value + float(new[key]) for key, value in list(accum.items()) if
+                   key not in ['Component', 'count']}
             count = accum['count'] + 1
             return dict(row, **{'count': count})
 
@@ -185,7 +190,8 @@ class Trepn(Profiler):
         init = dict({fn: 0 for fn in list(runs[0].keys())}, **{'count': 0})
         runs_total = reduce(add_row, runs, init)
         return OrderedDict(
-            sorted(list({k: v / len(runs) for k, v in list(runs_total.items()) if not k == 'count'}.items()), key=lambda x: x[0]))
+            sorted(list({k: v / len(runs) for k, v in list(runs_total.items()) if not k == 'count'}.items()),
+                   key=lambda x: x[0]))
 
     @staticmethod
     def split_reader(reader):
