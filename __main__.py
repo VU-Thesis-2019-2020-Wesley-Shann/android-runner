@@ -8,7 +8,7 @@ import paths
 from AndroidRunner.ExperimentFactory import ExperimentFactory
 from AndroidRunner.Progress import Progress
 from AndroidRunner.util import makedirs
-
+import traceback
 
 def main():
     args = parse_arguments(sys.argv[1:])
@@ -27,6 +27,7 @@ def main():
         progress_file = experiment.get_progress_xml_file()
         experiment.start()
     except Exception as e:
+        traceback.print_exc()
         logger.error('%s: %s' % (e.__class__.__name__, str(e)))
         logger.error('An error occurred, the experiment has been stopped. '
                      'To continue, add progress file argument to experiment startup: '
